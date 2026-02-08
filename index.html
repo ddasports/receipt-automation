@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Receipt Automation</title>
+</head>
+<body>
+
+<h2>Trigger Receipt Workflow</h2>
+<button onclick="trigger()">Trigger</button>
+
+<script>
+async function trigger() {
+  const token = "RECEIPT_AUTOMATION_TOKEN"; // temp
+
+  const payload = {
+    event_type: "web_trigger",
+    client_payload: {
+      receipt: "DSC17_V56425376765",
+      date: new Date().toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+      })
+    }
+  };
+
+  const res = await fetch(
+    "https://api.github.com/repos/YOUR_USERNAME/receipt-automation/dispatches",
+    {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.github+json",
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  alert(res.status === 204 ? "Triggered ✅" : "Failed ❌");
+}
+</script>
+
+</body>
+</html>
