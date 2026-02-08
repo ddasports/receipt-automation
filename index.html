@@ -1,43 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Receipt Automation</title>
+  <title>Receipt Trigger Panel</title>
 </head>
 <body>
 
 <h2>Trigger Receipt Workflow</h2>
-<button onclick="trigger()">Trigger</button>
+
+<button onclick="triggerHarsh()">Harsh</button>
+<button onclick="triggerParitosh()">Paritosh</button>
 
 <script>
-async function trigger() {
-  const token = "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"; // temp
+const TOKEN = "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"; // ⚠️ temporary
+const OWNER = "ddasports";
 
-  const payload = {
-    event_type: "web_trigger",
-    client_payload: {
-      receipt: "DSC17_V56425376765",
-      date: new Date().toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-      })
-    }
-  };
-
-  const res = await fetch(
-    "https://api.github.com/repos/ddasports/receipt-automation/dispatches",
+async function trigger(repo, label) {
+  const response = await fetch(
+    `https://api.github.com/repos/${OWNER}/${repo}/dispatches`,
     {
       method: "POST",
       headers: {
         "Accept": "application/vnd.github+json",
-        "Authorization": `Bearer ${token}`,
+        "Authorization": `Bearer ${TOKEN}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        event_type: "web_trigger",
+        client_payload: {
+          triggered_by: label,
+          timestamp: new Date().toISOString()
+        }
+      })
     }
   );
 
-  alert(res.status === 204 ? "Triggered ✅" : "Failed ❌");
+  if (response.status === 204) {
+    alert(`${label} repo triggered ✅`);
+  } else {
+    const text = await response.text();
+    alert(`Failed ❌\n${text}`);
+  }
+}
+
+function triggerHarsh() {
+  trigger(
+    "ddasports-app-adm-printvisitor-DSC17_V56425376765",
+    "Harsh"
+  );
+}
+
+function triggerParitosh() {
+  trigger(
+    "app-adm-printvisitor-DSC17_V56425265654",
+    "Paritosh"
+  );
 }
 </script>
 
